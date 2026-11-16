@@ -1,0 +1,167 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "The Solovay-Kitaev theorem for Clifford+T words, with the Dawson-Nielsen exponent"
+  description: >-
+    A machine-checked proof of the Solovay-Kitaev theorem for single-qubit Clifford+T circuits.
+    A word is a finite sequence of the letters H, T and T^-1 (with T^-1 = T^7), and its value
+    is the product of the letters' 2 x 2 matrices. There are constants K > 0 and e > 0 such that
+    for every epsilon with 0 < epsilon <= e, every U in SU(2) is within epsilon of the value of a
+    word of length at most K log(1/epsilon)^c, in the operator norm, where
+    c = log 5 / log(3/2), about 3.97, is Dawson and Nielsen's exponent. A second theorem places
+    c strictly between 3 and 4. The word approximates U itself, not U up to a phase. K and e
+    are not computed. The proof was first completed in the author's csd-lean4 library on
+    6 October 2026 (commit 01e973e9). The theorem is classical and no priority is claimed for
+    it.
+  authors:
+    - "Zayn Blore"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - "Zayn Blore"
+
+repository:
+  role: "substantive-development"
+
+classification:
+  arxiv: ["quant-ph", "math.GR"]
+  msc2020: ["81P68", "81P65", "68Q12"]
+
+sources:
+  - title: "The Solovay-Kitaev algorithm"
+    authors:
+      - "Christopher M. Dawson"
+      - "Michael A. Nielsen"
+    id: "https://arxiv.org/abs/quant-ph/0505030"
+    type: "paper"
+    location: >-
+      Quantum Information and Computation 6 (2006), 81; arXiv:quant-ph/0505030. Sections 3
+      and 4, as cited by csd-lean4. Not read for this entry.
+    relationship: "adapts"
+    note: >-
+      csd-lean4 cites this paper for the recursion it formalises: approximate U, write the
+      residual as a balanced group commutator of two near-identity unitaries, approximate those
+      one level down, and reassemble. One level uses five shorter words, which gives the
+      exponent log 5 / log(3/2). The base case here is a finite net of Clifford+T words from
+      compactness of SU(2) and density of the Clifford+T group, so K and e are not computed.
+    author_endorsement: "n/a"
+  - title: "Quantum computations: algorithms and error correction"
+    authors:
+      - "A. Yu. Kitaev"
+    id: "https://doi.org/10.1070/RM1997v052n06ABEH002155"
+    type: "paper"
+    location: "Russian Mathematical Surveys 52 (1997), 1191-1249. Not read for this entry."
+    relationship: "background"
+    note: >-
+      Kitaev outlined a proof in this review paper. Solovay had announced the result for SU(2)
+      in 1995 without publishing a proof.
+    author_endorsement: "n/a"
+  - title: "Quantum Computation and Quantum Information"
+    authors:
+      - "Michael A. Nielsen"
+      - "Isaac L. Chuang"
+    id: "https://doi.org/10.1017/CBO9780511976667"
+    type: "book"
+    location: >-
+      Cambridge University Press, 10th anniversary edition, 2010. Appendix 3, as cited by
+      csd-lean4. Not read for this entry.
+    relationship: "background"
+    note: >-
+      The textbook account of the Solovay-Kitaev theorem.
+    author_endorsement: "n/a"
+
+related_formalizations:
+  - id: "https://github.com/zblore/csd-lean4/blob/30850da3f5669dc02aac297043819bc5f854dc2f/CsdLean4/Mathlib/QuantumInfo/SolovayKitaevCount.lean"
+    relationship: "builds-on"
+    note: >-
+      My larger Lean project, where this proof was written. The theorem
+      exists_word_approx_polylog was first proved there on 6 October 2026 (commit 01e973e9),
+      with the density of the Clifford+T group (26 September) and the commutator decomposition,
+      error recursion and word-length recursion (6 October). This repository copies the fifteen
+      files of its import closure from commit 30850da3 with the code unchanged, except that two
+      definitions were moved earlier in one file, and the comments edited. New here:
+      SolovayKitaevLean/Basic.lean (the two Challenge statements) and the controls.
+  - id: "https://github.com/spitters/CatCrypt-core/tree/5720e6afceabeea66e5764095b829b7fdb0ea6da/CatCryptCore/ForMathlib/SolovayKitaev"
+    relationship: "independent"
+    note: >-
+      CatCrypt-core (MIT), by Bas Spitters and the CatCrypt contributors, committed on
+      16 November 2026, after the csd-lean4 proof. Its solovay_kitaev proves the theorem for SU(2)
+      over any gate set closed under inverses, assuming an epsilon-net of words of bounded length,
+      with explicit constants and the same exponent log 5 / log(3/2). HTDense.lean proves that
+      iH and e^(-i pi/8) T, scaled to determinant one, generate a dense subgroup of SU(2). The
+      directory does not combine the two into a theorem about Clifford+T words. Read, not
+      compiled.
+
+status:
+  scope: >-
+    The Solovay-Kitaev theorem for one qubit: every element of SU(2), as Mathlib's
+    Matrix.specialUnitaryGroup (Fin 2) C, is within epsilon of a Clifford+T word of length at
+    most K log(1/epsilon)^c, for all small epsilon, with c = log 5 / log(3/2) and distances in
+    the l2 operator norm. Not covered: other gate sets, more than one qubit, explicit values of
+    K and e, an algorithm that computes the word, and the better exponents and constructive
+    syntheses known in the literature.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms:
+    - "propext"
+    - "Classical.choice"
+    - "Quot.sound"
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["Claude Opus 4.8", "Claude Fable 5", "Claude Fable 5.1", "Claude Opus 5", "Claude Opus 5.5", "Claude Fable 5.2"]
+      framework: "Claude Code"
+  notes: >-
+    I drafted the Lean with Claude Code, in csd-lean4. The main proof, from the density of the
+    Clifford+T group to the gate count, was written with Claude Opus 5 between 25 September and
+    6 October 2026. The supporting files on the T gate and quantum registers were started with
+    Claude Opus 4.8, Claude Fable 5 and Claude Fable 5.1 between June and September. This
+    extraction, SolovayKitaevLean/Basic.lean and the controls were written with Claude Opus 5.5
+    in November 2026, and the copied files' comments were edited with Claude Fable 5.2. I
+    directed the work and checked the result.
+
+fidelity:
+  divergences: >-
+    SU(2) is Mathlib's Matrix.specialUnitaryGroup (Fin 2) C: unitary 2 x 2 complex matrices with
+    determinant one. The inverse of T is written T^7 and counts as one letter, so a word and its
+    inverse have the same length. The word must approximate U as a matrix, not up to a global
+    phase, so the result is slightly stronger than approximation in U(2) modulo phase; any
+    unitary is a phase times an element of SU(2). The constants K and e are existential. The
+    exponent is exactly log 5 / log(3/2), Dawson and Nielsen's; the theorem does not claim a
+    smaller one. Counting T^-1 as a letter only affects K: replacing each T^-1 by T^7 gives a
+    word over H and T at most seven times as long. Dawson and Nielsen take every gate in SU(d)
+    and state the theorem for any instruction set and every epsilon; here the gates are the
+    standard H and T, whose determinants are -1 and e^(i pi/4), and the theorem is for this one
+    gate set and small epsilon.
+
+review:
+  status: "agent-reviewed"
+  reviewers:
+    - "Claude Fable 5.2 (AI-model review commissioned by the author, 16 November 2026)"
+    - "OpenAI gpt-6-astra (AI-model review commissioned by the author, 16 November 2026)"
+  notes: >-
+    The proof development has no sorry, admit or native_decide. The sorries in Challenge.lean
+    are Comparator's placeholders, and audit/Control.lean has one deliberate sorry to show that
+    the axiom audit catches it. The proof uses only propext, Classical.choice and Quot.sound,
+    checked by audit/Axioms.lean with #guard_msgs. Lake's own Comparator comparison
+    (Lake.Check.compareAt and checkAxioms) passes with the Challenge compiled under an alias
+    module name. The two AI-model reviews worked independently. Both rebuilt the project or
+    rechecked its files, ran both audits and confirmed the statement, the definitions and the
+    copied code; one re-ran Lake's comparison. They found errors in comments, citations,
+    metadata and controls, which were fixed before publication. The reviews are not published.
+    The full lake comparator, with its kernel replays, runs in CI.
+
+alignment:
+  statements:
+    - source: "The Solovay-Kitaev theorem for Clifford+T words, Dawson-Nielsen exponent"
+      lean: "solovay_kitaev"
+      module: "Solution"
+      status: "proved"
+    - source: "The exponent log 5 / log(3/2) lies strictly between 3 and 4"
+      lean: "exponent_mem_Ioo"
+      module: "Solution"
+      status: "proved"
+
+acknowledgements: >-
+  Thanks to the authors of Lean 4 and Mathlib.
